@@ -29,6 +29,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.squareup.okhttp3:okhttp:3.3.1'
     compile 'com.google.code.gson:gson:2.3.1'
-    compile 'com.github.gugu0087:GuUtils:2.2.2'
     testCompile 'junit:junit:4.12'
 }

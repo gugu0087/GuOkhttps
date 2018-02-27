@@ -1,15 +1,15 @@
 package com.xyc.guokhttps;
 
-import com.xyc.okutils.MyApplication;
+import android.app.Application;
 
 /**
  * Created by hasee on 2018/2/26.
  */
 
-public class MyGuApplication extends MyApplication{
+public class MyGuApplication extends Application{
     @Override
     public void onCreate() {
         super.onCreate();
-        MyOkhttpUtils.initOkhttp();
+        MyOkhttpUtils.initOkhttp(this);
     }
 }

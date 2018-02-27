@@ -1,10 +1,10 @@
 package com.xyc.okhttputils.log;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.xyc.okutils.model.NetLogModel;
-import com.xyc.okutils.utils.NetLogManager;
+import com.xyc.okhttputils.log.model.NetLogModel;
 
 import java.io.IOException;
 
@@ -24,17 +24,18 @@ public class LoggerInterceptor implements Interceptor {
     public static final String TAG = "OkHttpUtils";
     private String tag;
     private boolean showResponse;
-
-    public LoggerInterceptor(String tag, boolean showResponse) {
+    private Context context;
+    public LoggerInterceptor(String tag, boolean showResponse,Context context) {
         if (TextUtils.isEmpty(tag)) {
             tag = TAG;
         }
         this.showResponse = showResponse;
         this.tag = tag;
+        this.context = context;
     }
 
-    public LoggerInterceptor(String tag) {
-        this(tag, false);
+    public LoggerInterceptor(String tag,Context context) {
+        this(tag, false,context);
     }
 
     @Override
@@ -81,7 +82,7 @@ public class LoggerInterceptor implements Interceptor {
 
                             body = ResponseBody.create(mediaType, resp);
 
-                            NetLogManager.getInstance().logNetResponse(netLogModel,true);
+                            NetLogManager.getInstance(context).logNetResponse(netLogModel,true);
                             return response.newBuilder().body(body).build();
                         } else {
                             Log.i(tag, "responseBody's content : " + " maybe [file part] , too large too print , ignored!");
@@ -113,7 +114,7 @@ public class LoggerInterceptor implements Interceptor {
             if (headers != null && headers.size() > 0) {
                 Log.i(tag, "headers : " + headers.toString());
                 netLogModel.setHeaders(headers.toString());
-                NetLogManager.getInstance().logNetResponse(netLogModel,false);
+                NetLogManager.getInstance(context).logNetResponse(netLogModel,false);
             }
             RequestBody requestBody = request.body();
             if (requestBody != null) {
