@@ -13,7 +13,7 @@ public class PostFileBuilder extends OkHttpRequestBuilder<PostFileBuilder>
 {
     private File file;
     private MediaType mediaType;
-
+    public boolean isFormSubmitFile = false;
 
     public OkHttpRequestBuilder file(File file)
     {
@@ -30,7 +30,9 @@ public class PostFileBuilder extends OkHttpRequestBuilder<PostFileBuilder>
     @Override
     public RequestCall build()
     {
-        return new PostFileRequest(url, tag, params, headers, file, mediaType,id).build();
+        PostFileRequest postFileRequest = new PostFileRequest(url, tag, params, headers, file, mediaType, id);
+        postFileRequest.isFormSubmitFile = isFormSubmitFile;
+        return postFileRequest.build();
     }
 
 
