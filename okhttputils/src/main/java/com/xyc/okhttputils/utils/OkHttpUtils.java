@@ -117,26 +117,14 @@ public class OkHttpUtils {
                         return;
                     }
 
-                    if (finalCallback.validateReponse(response, id)) {
-                        mPlatform.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                Object o = null;
-                                try {
-                                    o = finalCallback.parseNetworkResponse(response, id);
-                                    sendSuccessResultCallback(o, finalCallback, id);
-                                } catch (Exception e) {
-                                    sendFailResultCallback(call, e, finalCallback, id);
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                    }
+                    sendSuccessResultCallback(response, finalCallback, id);
+
                 } catch (Exception e) {
                     sendFailResultCallback(call, e, finalCallback, id);
                 } finally {
-                    if (response != null && response.body() != null)
-                        response.body().close();
+                    if (response != null && response.body() != null) {
+                       response.body().close();
+                    }
                 }
 
             }
@@ -156,12 +144,26 @@ public class OkHttpUtils {
         });
     }
 
-    public void sendSuccessResultCallback(final Object object, final Callback callback, final int id) {
+    public void sendSuccessResultCallback(final Response response, final Callback callback, final int id) {
         if (callback == null) {
             return;
         }
-        callback.onResponse(object, id);
-        callback.onAfter(id);
+
+        mPlatform.execute(new Runnable() {
+            @Override
+            public void run() {
+                Object o = null;
+                try {
+                    o = callback.parseNetworkResponse(response, id);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if(o!=null){
+                    callback.onResponse(o, id);
+                    callback.onAfter(id);
+                }
+            }
+        });
     }
 
     public void cancelTag(Object tag) {
