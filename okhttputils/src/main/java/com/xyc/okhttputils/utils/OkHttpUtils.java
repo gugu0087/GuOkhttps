@@ -116,23 +116,26 @@ public class OkHttpUtils {
                         sendFailResultCallback(call, new IOException("request failed , reponse's code is : " + response.code()), finalCallback, id);
                         return;
                     }
-                    mPlatform.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            Object o = null;
-                            try {
-                                o = finalCallback.parseNetworkResponse(response, id);
-                                sendSuccessResultCallback(o, finalCallback, id);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
 
-                        }
-                    });
+                    if (finalCallback.validateReponse(response, id)) {
+                        mPlatform.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                Object o = null;
+                                try {
+                                    o = finalCallback.parseNetworkResponse(response, id);
+                                    sendSuccessResultCallback(o, finalCallback, id);
+                                } catch (Exception e) {
+                                    sendFailResultCallback(call, e, finalCallback, id);
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
                 } catch (Exception e) {
                     sendFailResultCallback(call, e, finalCallback, id);
                 } finally {
-                    if (response.body() != null)
+                    if (response != null && response.body() != null)
                         response.body().close();
                 }
 
@@ -154,14 +157,11 @@ public class OkHttpUtils {
     }
 
     public void sendSuccessResultCallback(final Object object, final Callback callback, final int id) {
-        if (callback == null) return;
-        mPlatform.execute(new Runnable() {
-            @Override
-            public void run() {
-                callback.onResponse(object, id);
-                callback.onAfter(id);
-            }
-        });
+        if (callback == null) {
+            return;
+        }
+        callback.onResponse(object, id);
+        callback.onAfter(id);
     }
 
     public void cancelTag(Object tag) {
