@@ -1,12 +1,12 @@
 package com.xyc.guokhttps;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,14 +37,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-
+        EventBus.getDefault().register(this);
     }
 
     private void initView() {
         tvContent = (TextView) findViewById(R.id.tvContent);
 
     }
-
     public void loginClick(View view) {
         login();
     }
@@ -52,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
     public void getNetData(View view) {
         // getShopInfo(0, -1, -1, null);
         // submitLocationData();
-         okHttpUpload();
+        okHttpUpload();
+
     }
 
     private void login() {
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                 .execute(new Callback() {
                     @Override
                     public Object parseNetworkResponse(Response response, int id) throws Exception {
-                        Log.d("xyc", "parseNetworkResponse: "+Thread.currentThread().getName());
+                        Log.d("xyc", "parseNetworkResponse: " + Thread.currentThread().getName());
                         Log.d("xyc", "parseNetworkResponse: response-code=" + response.code());
                         Log.d("xyc", "parseNetworkResponse: response-body=" + response.body().string());
 
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                        Log.d("xyc", "onError: "+Thread.currentThread().getName());
+                        Log.d("xyc", "onError: " + Thread.currentThread().getName());
                         Log.d("xyc", "onError: response=" + e.getMessage());
 
                     }
