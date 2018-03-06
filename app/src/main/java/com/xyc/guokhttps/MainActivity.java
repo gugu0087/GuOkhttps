@@ -72,11 +72,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         Log.d("xyc", "onError: e=" + e.getMessage());
-                        Log.d("xyc", "onError: id=" + id);
+                        Log.d("xyc", "onError: thread=" + Thread.currentThread().getName());
                     }
 
                     @Override
                     public void onResponse(User response, int id) {
+                        Log.d("xyc", "onResponse: thread=" + Thread.currentThread().getName());
                         Log.d("xyc", "onResponse: response=" + response);
                         tvContent.setText(response.toString());
                         token = response.getToken();
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                 }) {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                        Log.d("xyc", "getShopInfo-onError: e=" + e.getMessage());
+                        Log.d("xyc", "getShopInfo-onError: thread=" + e.getMessage());
                         Log.d("xyc", "getShopInfo-onError: id=" + id);
                     }
 
@@ -168,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void okHttpUpload() {
 
-        String path = "/storage/emulated/0/Download/fb18c9c60884c67f4401bef7bffb5f88.jpg";
+        String path = "/storage/emulated/0/DCIM/camera/IMG_20180301_141314.jpg";
         File file = new File(path);
         String url = url_upload;
         PostFileBuilder postFileBuilder = OkHttpUtils.postFile();
@@ -183,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
                 .execute(new Callback() {
                     @Override
                     public Object parseNetworkResponse(Response response, int id) throws Exception {
+                        Log.d("xyc", "parseNetworkResponse: "+Thread.currentThread().getName());
                         Log.d("xyc", "parseNetworkResponse: response-code=" + response.code());
                         Log.d("xyc", "parseNetworkResponse: response-body=" + response.body().string());
 
@@ -191,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Call call, Exception e, int id) {
+                        Log.d("xyc", "onError: "+Thread.currentThread().getName());
                         Log.d("xyc", "onError: response=" + e.getMessage());
 
                     }
@@ -201,5 +204,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
 }

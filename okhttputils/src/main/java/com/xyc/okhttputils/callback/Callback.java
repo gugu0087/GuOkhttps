@@ -1,5 +1,7 @@
 package com.xyc.okhttputils.callback;
 
+import android.os.Looper;
+
 import okhttp3.Call;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -63,6 +65,7 @@ public abstract class Callback<T>
         @Override
         public Object parseNetworkResponse(Response response, int id) throws Exception
         {
+
             return null;
         }
 
