@@ -121,10 +121,6 @@ public class OkHttpUtils {
 
                 } catch (Exception e) {
                     sendFailResultCallback(call, e, finalCallback, id);
-                } finally {
-                    if (response != null && response.body() != null) {
-                       response.body().close();
-                    }
                 }
 
             }

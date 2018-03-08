@@ -7,12 +7,15 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.xyc.okhttputils.builder.PostFileBuilder;
 import com.xyc.okhttputils.callback.Callback;
 import com.xyc.okhttputils.callback.GenericsCallback;
+import com.xyc.okhttputils.eventbus.InterceptCodeEvent;
 import com.xyc.okhttputils.request.JsonGenericsSerializator;
 import com.xyc.okhttputils.utils.OkHttpUtils;
 
@@ -40,10 +43,17 @@ public class MainActivity extends AppCompatActivity {
         EventBus.getDefault().register(this);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLoginOutEvent(InterceptCodeEvent event) {
+        int code = event.getCode();
+        Log.d("xyc", "onLoginOutEvent: code="+code);
+    }
+
     private void initView() {
         tvContent = (TextView) findViewById(R.id.tvContent);
 
     }
+
     public void loginClick(View view) {
         login();
     }
