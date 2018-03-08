@@ -58,7 +58,6 @@ public abstract class Callback<T>
 
     public abstract void onResponse(T response, int id);
 
-
     public static Callback CALLBACK_DEFAULT = new Callback()
     {
 
@@ -80,6 +79,7 @@ public abstract class Callback<T>
         {
 
         }
+
     };
 
 }

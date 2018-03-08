@@ -20,6 +20,7 @@ import com.xyc.okhttputils.request.JsonGenericsSerializator;
 import com.xyc.okhttputils.utils.OkHttpUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,9 +90,10 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(User response, int id) {
                         Log.d("xyc", "onResponse: thread=" + Thread.currentThread().getName());
                         Log.d("xyc", "onResponse: response=" + response);
-                        tvContent.setText(response.toString());
-                        token = response.getToken();
+                      /*  tvContent.setText(response.toString());
+                        token = response.getToken();*/
                     }
+
                 });
     }
 
@@ -123,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                         tvContent.setText(response.toString());
                         Log.d("xyc", "getShopInfo-onResponse: response=" + response);
                     }
+
                 });
 
     }
@@ -171,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
 
                         Log.d("xyc", "parseNetworkResponse: response=" + response);
                     }
+
                 });
 
     }
@@ -212,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(Object response, int id) {
                         Log.d("xyc", "onResponse: response=" + response);
                     }
+
                 });
     }
 

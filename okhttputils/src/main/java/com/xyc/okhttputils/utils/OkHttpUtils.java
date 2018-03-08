@@ -1,5 +1,7 @@
 package com.xyc.okhttputils.utils;
 
+import android.util.Log;
+
 import com.xyc.okhttputils.builder.GetBuilder;
 import com.xyc.okhttputils.builder.HeadBuilder;
 import com.xyc.okhttputils.builder.OtherRequestBuilder;
@@ -144,22 +146,24 @@ public class OkHttpUtils {
         if (callback == null) {
             return;
         }
+        try {
+            Object o = null;
+            o = callback.parseNetworkResponse(response, id);
+            final Object finalO = o;
+            mPlatform.execute(new Runnable() {
+                @Override
+                public void run() {
+                    if (finalO != null) {
+                        callback.onResponse(finalO, id);
+                        callback.onAfter(id);
+                    }
+                }
+            });
 
-        mPlatform.execute(new Runnable() {
-            @Override
-            public void run() {
-                Object o = null;
-                try {
-                    o = callback.parseNetworkResponse(response, id);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if(o!=null){
-                    callback.onResponse(o, id);
-                    callback.onAfter(id);
-                }
-            }
-        });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void cancelTag(Object tag) {
