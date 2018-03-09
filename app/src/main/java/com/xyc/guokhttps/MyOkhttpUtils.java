@@ -21,7 +21,7 @@ public class MyOkhttpUtils {
 
     public static void initOkhttp(Context context) {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .addInterceptor(new LoggerInterceptor(TAG,true,context))
+                .addInterceptor(new LoggerInterceptor(TAG, true, context))
                 .connectTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
                 .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
                 //其他配置
@@ -34,10 +34,23 @@ public class MyOkhttpUtils {
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager)
                 //其他配置
-                .addInterceptor(new LoggerInterceptor(TAG,true,context))
+                .addInterceptor(new LoggerInterceptor(TAG, true, context))
                 .connectTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
                 .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
                 .build();
         OkHttpUtils.initClient(okHttpClient);
+    }
+
+    public static void initHttpOkhttp(Context context, boolean isSupportHttps) {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        if (isSupportHttps) {
+            HttpsUtils.SSLParams sslParams = HttpsUtils.getSslSocketFactory(null, null, null);
+            builder.sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager);
+        }
+        //其他配置
+        builder.addInterceptor(new LoggerInterceptor(TAG, true, context));
+        builder.connectTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS);
+        builder.readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS);
+        OkHttpUtils.initClient(builder.build());
     }
 }

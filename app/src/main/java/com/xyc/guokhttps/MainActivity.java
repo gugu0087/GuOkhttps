@@ -25,15 +25,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.Call;
-import okhttp3.MediaType;
-import okhttp3.Response;
+
 
 public class MainActivity extends AppCompatActivity {
-    public final String URL = "http://192.168.1.14:9010/";
+    public final String URL = "http://192.168.1.45:8010/";
     private TextView tvContent;
-    private String url_login = URL + "sign/login";
+    private String url_login = URL + "login";
     private String url_shop = URL + "shopinfo";
-    public String url_upload = URL + "oss/files/upload";
+    public String url_upload = URL + "files/upload";
     private String token;
 
     @Override
@@ -47,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLoginOutEvent(InterceptCodeEvent event) {
         int code = event.getCode();
-        Log.d("xyc", "onLoginOutEvent: code="+code);
+        Log.d("xyc", "onLoginOutEvent: code=" + code);
     }
 
     private void initView() {
@@ -69,29 +68,21 @@ public class MainActivity extends AppCompatActivity {
     private void login() {
         JSONObject params = new JSONObject();
         try {
-            params.put("loginName", "test0126BDM");
-            params.put("password", "a123456");
+            params.put("loginName", "test");
+            params.put("password", "123456");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        OkHttpUtils.postString()
-                .url(url_login)
-                .content(params.toString())
-                .mediaType(MediaType.parse("application/json; charset=utf-8"))
-                .build()
+        DataManager.getInstance().sendPostRequestData(url_login, params)
                 .execute(new GenericsCallback<User>(new JsonGenericsSerializator()) {
                     @Override
                     public void onError(Call call, Exception e, int id) {
                         Log.d("xyc", "onError: e=" + e.getMessage());
-                        Log.d("xyc", "onError: thread=" + Thread.currentThread().getName());
                     }
 
                     @Override
                     public void onResponse(User response, int id) {
-                        Log.d("xyc", "onResponse: thread=" + Thread.currentThread().getName());
                         Log.d("xyc", "onResponse: response=" + response);
-                      /*  tvContent.setText(response.toString());
-                        token = response.getToken();*/
                     }
 
                 });
@@ -109,15 +100,12 @@ public class MainActivity extends AppCompatActivity {
         params.put("pageNumber", String.valueOf(pageNumber));
         params.put("name", name);
         params.put("pageSize", String.valueOf(20));
-        OkHttpUtils.get().url(url_shop).params(params)
-                .addHeader("X-Authorization", "bearer " + token)
-                .build()
+        DataManager.getInstance().sendGetRequestData(url_shop, params)
                 .execute(new GenericsCallback<CommonModel>(new JsonGenericsSerializator() {
                 }) {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-                        Log.d("xyc", "getShopInfo-onError: thread=" + e.getMessage());
-                        Log.d("xyc", "getShopInfo-onError: id=" + id);
+
                     }
 
                     @Override
@@ -127,97 +115,24 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 });
-
     }
-
-    //LocationModel{latitude=23.148732, longitude=113.330478, address='林和西路9号', remark='null', province='广东省', provinceId=0, city='广州市', cityId=257, direct='天河区', directId=440106, street='null', streetId=0}
-    public void submitLocationData() {
-        JSONObject params = new JSONObject();
-        try {
-            params.put("id", 10337);
-            params.put("provinceName", "广东省");
-            params.put("cityName", "广州市");
-            params.put("directName", "天河区");
-            params.put("address", "林和西路9号");
-            params.put("latitude", 23.148732);
-            params.put("longitude", 113.330478);
-            params.put("province", 0);
-            params.put("city", 257);
-            params.put("direct", 440106);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        String url = URL + "shopinfo/position";
-        OkHttpUtils.postString().content(params.toString()).mediaType(MediaType.parse("application/json; charset=utf-8"))
-                .url(url)
-                .addHeader("X-Authorization", "bearer " + token)
-                .build()
-                .execute(new Callback() {
-                    @Override
-                    public Object parseNetworkResponse(Response response, int id) throws Exception {
-                        String string = response.body().string();
-                        int code = response.code();
-                        Log.d("xyc", "parseNetworkResponse: string=" + string);
-                        Log.d("xyc", "parseNetworkResponse: code=" + code);
-
-                        return null;
-                    }
-
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Log.d("xyc", "parseNetworkResponse: e=" + e.getMessage());
-                    }
-
-                    @Override
-                    public void onResponse(Object response, int id) {
-
-                        Log.d("xyc", "parseNetworkResponse: response=" + response);
-                    }
-
-                });
-
-    }
-
-    public final String MULTIPART_FORM_DATA = "image/*";       // 指明要上传的文件格式
 
     public void okHttpUpload() {
 
         String path = "/storage/emulated/0/DCIM/camera/IMG_20180301_141314.jpg";
         File file = new File(path);
         String url = url_upload;
-        PostFileBuilder postFileBuilder = OkHttpUtils.postFile();
-        postFileBuilder.isFormSubmitFile = true;
-        postFileBuilder.mediaType(MediaType.parse(MULTIPART_FORM_DATA));
+        DataManager.getInstance().sendPostFileData(url, file, new IGetResponseCodeListener() {
+            @Override
+            public void onSuccessResponse(int code, String response) {
 
-        postFileBuilder.file(file);
-        postFileBuilder
-                .url(url)
-                .addHeader("X-Authorization", "bearer " + token)
-                .build()
-                .execute(new Callback() {
-                    @Override
-                    public Object parseNetworkResponse(Response response, int id) throws Exception {
-                        Log.d("xyc", "parseNetworkResponse: " + Thread.currentThread().getName());
-                        Log.d("xyc", "parseNetworkResponse: response-code=" + response.code());
-                        Log.d("xyc", "parseNetworkResponse: response-body=" + response.body().string());
+            }
 
-                        return null;
-                    }
+            @Override
+            public void onFailedResponse(String msg) {
 
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        Log.d("xyc", "onError: " + Thread.currentThread().getName());
-                        Log.d("xyc", "onError: response=" + e.getMessage());
-
-                    }
-
-                    @Override
-                    public void onResponse(Object response, int id) {
-                        Log.d("xyc", "onResponse: response=" + response);
-                    }
-
-                });
+            }
+        });
     }
 
 
