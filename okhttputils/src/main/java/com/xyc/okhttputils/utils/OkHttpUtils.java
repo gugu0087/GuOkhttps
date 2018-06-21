@@ -103,26 +103,26 @@ public class OkHttpUtils {
         requestCall.getCall().enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(Call call, final IOException e) {
-                sendFailResultCallback(call, e, finalCallback, id);
+                sendFailResultCallback(null,call, e, finalCallback, id);
             }
 
             @Override
             public void onResponse(final Call call, final Response response) {
                 try {
                     if (call.isCanceled()) {
-                        sendFailResultCallback(call, new IOException("Canceled!"), finalCallback, id);
+                        sendFailResultCallback(response,call, new IOException("Canceled!"), finalCallback, id);
                         return;
                     }
 
                     if (!finalCallback.validateReponse(response, id)) {
-                        sendFailResultCallback(call, new IOException("request failed , reponse's code is : " + response.code()), finalCallback, id);
+                        sendFailResultCallback(response,call, new IOException("request failed , reponse's code is : " + response.code()), finalCallback, id);
                         return;
                     }
 
                     sendSuccessResultCallback(response, finalCallback, id);
 
                 } catch (Exception e) {
-                    sendFailResultCallback(call, e, finalCallback, id);
+                    sendFailResultCallback(response,call, e, finalCallback, id);
                 }
 
             }
@@ -130,13 +130,13 @@ public class OkHttpUtils {
     }
 
 
-    public void sendFailResultCallback(final Call call, final Exception e, final Callback callback, final int id) {
+    public void sendFailResultCallback(final Response response, final Call call, final Exception e, final Callback callback, final int id) {
         if (callback == null) return;
 
         mPlatform.execute(new Runnable() {
             @Override
             public void run() {
-                callback.onError(call, e, id);
+                callback.onError(response,call, e, id);
                 callback.onAfter(id);
             }
         });
