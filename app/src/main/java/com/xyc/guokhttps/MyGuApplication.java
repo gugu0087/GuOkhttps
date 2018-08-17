@@ -11,5 +11,6 @@ public class MyGuApplication extends Application{
     public void onCreate() {
         super.onCreate();
         MyOkhttpUtils.initOkhttp(this);
+        ApplicationHolder.setAppContext(this);
     }
 }

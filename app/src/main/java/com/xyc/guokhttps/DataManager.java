@@ -96,7 +96,7 @@ public class DataManager {
             }
 
             @Override
-            public void onError(Call call, Exception e, int i) {
+            public void onError(Response response,Call call, Exception e, int i) {
                 if(listener!=null){
                     listener.onFailedResponse(e.getMessage());
                 }
@@ -135,7 +135,7 @@ public class DataManager {
             }
 
             @Override
-            public void onError(Call call, Exception e, int i) {
+            public void onError(Response response,Call call, Exception e, int i) {
                if(listener!=null){
                    listener.onFailedResponse(e.getMessage());
                }

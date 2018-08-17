@@ -12,25 +12,25 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.xyc.okhttputils.builder.PostFileBuilder;
 import com.xyc.okhttputils.callback.Callback;
 import com.xyc.okhttputils.callback.GenericsCallback;
 import com.xyc.okhttputils.eventbus.InterceptCodeEvent;
 import com.xyc.okhttputils.request.JsonGenericsSerializator;
-import com.xyc.okhttputils.utils.OkHttpUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.Call;
+import okhttp3.Response;
 
 
 public class MainActivity extends AppCompatActivity {
-    public final String URL = "http://192.168.1.45:8010/";
+    public final String URL = "http://192.168.1.14:9010/";
     private TextView tvContent;
-    private String url_login = URL + "login";
+    private String url_login = URL + "sign/login";
     private String url_shop = URL + "shopinfo";
     public String url_upload = URL + "files/upload";
     private String token;
@@ -61,32 +61,62 @@ public class MainActivity extends AppCompatActivity {
     public void getNetData(View view) {
         // getShopInfo(0, -1, -1, null);
         // submitLocationData();
-        okHttpUpload();
-
+        //okHttpUpload();
+        getMyVerifyData();
     }
 
     private void login() {
         JSONObject params = new JSONObject();
         try {
-            params.put("loginName", "test");
-            params.put("password", "123456");
+            params.put("loginName", "test0117BDM");
+            params.put("password", "a123456");
         } catch (JSONException e) {
             e.printStackTrace();
         }
         DataManager.getInstance().sendPostRequestData(url_login, params)
                 .execute(new GenericsCallback<User>(new JsonGenericsSerializator()) {
                     @Override
-                    public void onError(Call call, Exception e, int id) {
+                    public void onError(Response response, Call call, Exception e, int id) {
                         Log.d("xyc", "onError: e=" + e.getMessage());
                     }
 
                     @Override
                     public void onResponse(User response, int id) {
-                        Log.d("xyc", "onResponse: response=" + response);
-                    }
 
+                        PreferencesUtils.putString("token", response.getToken());
+                        Log.d("xyc", "onResponse: response=" + response);
+                        tvContent.setText(response.toString());
+                    }
                 });
+
     }
+
+    public final String getMyVerifyData = URL + "shopinfo/myaudit";
+
+    public void getMyVerifyData() {
+        Map<String, String> map = new HashMap<>();
+        map.put("status", String.valueOf(1));
+        map.put("pageNumber", String.valueOf(0));
+        map.put("pageSize", String.valueOf(20));
+        DataManager.getInstance().sendGetRequestData(getMyVerifyData, map)
+                .execute(new GenericsCallback<GetMyVerifyDataModel>(new JsonGenericsSerializator()) {
+                            @Override
+                            public void onError(Response response, Call call, Exception e, int i) {
+
+                            }
+
+                            @Override
+                            public void onResponse(GetMyVerifyDataModel myVerifyDataModel, int i) {
+                                // EventBus.getDefault().post(new MyVerifyEvent(myVerifyDataModel));
+                                Log.d("xyc", "onResponse: myVerifyDataModel=" + myVerifyDataModel);
+
+                                tvContent.setText(myVerifyDataModel.toString());
+
+                            }
+
+                        });
+    }
+
 
     public void getShopInfo(int pageNumber, int creatorIds, int statuses, String name) {
         Map<String, String> params = new HashMap<>();
@@ -104,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 .execute(new GenericsCallback<CommonModel>(new JsonGenericsSerializator() {
                 }) {
                     @Override
-                    public void onError(Call call, Exception e, int id) {
+                    public void onError(Response response, Call call, Exception e, int id) {
 
                     }
 
